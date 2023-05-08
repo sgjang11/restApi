@@ -42,8 +42,9 @@ public class EventControllerTest {
                 .build();
 
         mockMvc.perform(post("/api/events")
-                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .accept(MediaTypes.HAL_JSON)
+                        .accept("application/hal+json; charset=UTF-8")
                         .content(objectMapper.writeValueAsString(event))
                 )
                 .andDo(print())
