@@ -2,14 +2,14 @@ package com.restApiStudy.restApi.events;
 
 import lombok.*;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
-@Getter
-@Setter
+@Getter @Setter
 @EqualsAndHashCode(of = "id")
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@Builder @NoArgsConstructor @AllArgsConstructor
+@Entity
 public class Event {
+    @Id @GeneratedValue
     private Integer id;
     private String name;
     private String description;
@@ -23,5 +23,6 @@ public class Event {
     private int limitOfEnrollment;
     private boolean offline;
     private boolean free;
+    @Enumerated(EnumType.STRING) // ORDINAL이 디폴트값 이건 순서대로 번호 부여 String으로 주는 것이 좋음 이유는 데이터가 꼬일 수 있음
     private EventStatus eventStatus = EventStatus.DRAFT;
 }
