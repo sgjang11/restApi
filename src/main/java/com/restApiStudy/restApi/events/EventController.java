@@ -41,6 +41,7 @@ public class EventController {
         return ResponseEntity.created(createUri).body(event);
     }
 */
+    // Errors errors 이거는 json화 할 수 없음.
     @PostMapping
     public ResponseEntity createEvent(@RequestBody @Valid EventDto eventDto, Errors errors) {
         /*Event event = Event.builder()
