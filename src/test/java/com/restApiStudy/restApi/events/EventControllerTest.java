@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.hateoas.MediaTypes;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -16,8 +17,7 @@ import java.time.LocalDateTime;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest // 요 아이는 슬라이스 테스트라 웹용 bean만 등록해줌 repository는 등록 안함.
@@ -51,12 +51,17 @@ public class EventControllerTest {
         mockMvc.perform(post("/api/events")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .accept(MediaTypes.HAL_JSON)
-                        .accept("application/hal+json; charset=UTF-8")
+                        //.accept("application/hal+json; charset=UTF-8")
                         .content(objectMapper.writeValueAsString(event))
                 )
                 .andDo(print())
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("id").exists());
+                .andExpect(jsonPath("id").exists())
+                //.andExpect(header().exists("Location"))
+                .andExpect(header().string("Content-Type", "application/hal+json;charset=UTF-8"))
+                .andExpect(header().exists(HttpHeaders.LOCATION))
+               // .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE))
+        ;
     }
 
 }
