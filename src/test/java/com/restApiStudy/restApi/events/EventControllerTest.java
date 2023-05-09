@@ -94,7 +94,7 @@ public class EventControllerTest {
                 .location("강남역 D2 스타텁 팩토리")
                 .free(true)
                 .offline(false)
-                .eventStatus(EventStatus.DRAFT)
+                .eventStatus(EventStatus.PUBLISHED)
                 .build();
 
         mockMvc.perform(post("/api/events")
@@ -110,7 +110,7 @@ public class EventControllerTest {
                 .andExpect(header().exists(HttpHeaders.LOCATION))
                 .andExpect(jsonPath("id").value(Matchers.not(100)))
                 .andExpect(jsonPath("free").value(Matchers.not(true)))
-                .andExpect(jsonPath("eventStatus").value(Matchers.not(EventStatus.DRAFT)))
+                .andExpect(jsonPath("eventStatus").value(EventStatus.DRAFT.name()))
         ;
     }
 }
