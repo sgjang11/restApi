@@ -5,7 +5,6 @@ import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,9 +25,12 @@ public class EventController {
 
     private final ModelMapper modelMapper;
 
-    public EventController(EventRepository eventRepository, ModelMapper modelMapper) {
+    private final EventValidation eventValidation;
+
+    public EventController(EventRepository eventRepository, ModelMapper modelMapper, EventValidation eventValidation) {
         this.eventRepository = eventRepository;
         this.modelMapper = modelMapper;
+        this.eventValidation = eventValidation;
     }
 
 /*
@@ -45,9 +47,16 @@ public class EventController {
                 .name(eventDto.getName())
                 ...
                 .build();*/
+        // dto에서 설정한 @를 검증
         if (errors.hasErrors()) {
             return ResponseEntity.badRequest().build();
         }
+        // 이젠 데이터를 검증
+        eventValidation.validate(eventDto, errors);
+        if (errors.hasErrors()) {
+            return ResponseEntity.badRequest().build();
+        }
+
         Event event = modelMapper.map(eventDto, Event.class);
         Event newEvent = this.eventRepository.save(event);
         URI createUri = linkTo(EventController.class).slash(newEvent.getId()).toUri();
