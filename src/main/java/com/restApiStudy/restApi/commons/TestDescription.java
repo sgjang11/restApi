@@ -1,4 +1,4 @@
-package com.restApiStudy.restApi.events;
+package com.restApiStudy.restApi.commons;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

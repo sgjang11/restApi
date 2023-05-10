@@ -1,12 +1,14 @@
-package com.restApiStudy.restApi.events;
+package com.restApiStudy.restApi.commons;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import org.springframework.boot.jackson.JsonComponent;
 import org.springframework.validation.Errors;
 
 import java.io.IOException;
 
+@JsonComponent
 public class ErrorsSerializer extends JsonSerializer<Errors> {
 
     @Override
@@ -26,9 +28,21 @@ public class ErrorsSerializer extends JsonSerializer<Errors> {
 
                 jsonGenerator.writeEndObject();
             } catch (IOException ex) {
-                throw new RuntimeException(ex);
+                ex.printStackTrace();
             }
 
+        });
+
+        errors.getGlobalErrors().forEach(e->{
+            try {
+                jsonGenerator.writeStartObject();
+                jsonGenerator.writeStringField("objectName",e.getObjectName());
+                jsonGenerator.writeStringField("code",e.getCode());
+                jsonGenerator.writeStringField("defaultMessage",e.getDefaultMessage());
+                jsonGenerator.writeEndObject();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         });
 
         jsonGenerator.writeEndArray();
