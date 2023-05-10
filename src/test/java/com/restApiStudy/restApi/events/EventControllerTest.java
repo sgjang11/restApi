@@ -1,15 +1,13 @@
 package com.restApiStudy.restApi.events;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.restApiStudy.restApi.commons.TestDescription;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -217,11 +215,14 @@ public class EventControllerTest {
                         .content(this.objectMapper.writeValueAsString(eventDto))
                 )
                 .andExpect(status().isBadRequest())
+                // 만약 FieldError일 경우 아래가 가능
+                // 하지만 GlobalError일 경우 field와 rejectedValue가 없기 때문에 에러발생할 수 있음.
+                .andDo(print())
+                //.andExpect(jsonPath("$[0].field").exists())
                 .andExpect(jsonPath("$[0].objectName").exists())
-                .andExpect(jsonPath("$[0].field").exists())
                 .andExpect(jsonPath("$[0].defaultMessage").exists())
                 .andExpect(jsonPath("$[0].code").exists())
-                .andExpect(jsonPath("$[0].rejectedValue").exists())
+                //.andExpect(jsonPath("$[0].rejectedValue").exists())
         ;
     }
 

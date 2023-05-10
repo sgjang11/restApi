@@ -48,14 +48,19 @@ public class EventController {
                 .name(eventDto.getName())
                 ...
                 .build();*/
-        // dto에서 설정한 @를 검증
+        // dto에서 설정한 @들을 검증
         if (errors.hasErrors()) {
-            return ResponseEntity.badRequest().build();
+            // 여기서 build()에서 body(event)로 수정
+            // json화 하여 보여줄것임. 하지만 errors는 json화 하지 못하여
+            // ErrorsSerializer 클래스를 생성하여 보내줄 것임.
+            //return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(errors);
         }
         // 이젠 데이터를 검증
         eventValidation.validate(eventDto, errors);
         if (errors.hasErrors()) {
-            return ResponseEntity.badRequest().build();
+            //return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(errors);
         }
 
         Event event = modelMapper.map(eventDto, Event.class);
