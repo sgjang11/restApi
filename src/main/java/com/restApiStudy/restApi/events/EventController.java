@@ -64,6 +64,7 @@ public class EventController {
         }
 
         Event event = modelMapper.map(eventDto, Event.class);
+        event.update(); // event가 유료인지 무료인지, 장소가 비어있는지 확인 원래는 service 쪽에서 실행
         Event newEvent = this.eventRepository.save(event);
         URI createUri = linkTo(EventController.class).slash(newEvent.getId()).toUri();
         return ResponseEntity.created(createUri).body(event);
