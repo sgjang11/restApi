@@ -1,7 +1,9 @@
 package com.restApiStudy.restApi.events;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
@@ -66,7 +68,15 @@ public class EventController {
         Event event = modelMapper.map(eventDto, Event.class);
         event.update(); // event가 유료인지 무료인지, 장소가 비어있는지 확인 원래는 service 쪽에서 실행
         Event newEvent = this.eventRepository.save(event);
-        URI createUri = linkTo(EventController.class).slash(newEvent.getId()).toUri();
-        return ResponseEntity.created(createUri).body(event);
+        WebMvcLinkBuilder webMvcLinkBuilder = linkTo(EventController.class).slash(newEvent.getId());
+        URI createUri = webMvcLinkBuilder.toUri();
+        //return ResponseEntity.created(createUri).body(event); //HATEOAS를 적용하기위해 주석
+
+        EventResource eventResource = new EventResource(event);
+        //eventResource.add(new Link()); // 이렇게도 가능 하지만 linkTo()를 사용
+        eventResource.add(linkTo(EventController.class).withRel("query-events"));
+        eventResource.add(webMvcLinkBuilder.withSelfRel());
+        eventResource.add(webMvcLinkBuilder.withRel("update-event"));
+        return ResponseEntity.created(createUri).body(eventResource);
     }
 }
