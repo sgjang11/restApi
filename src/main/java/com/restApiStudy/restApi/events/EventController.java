@@ -75,9 +75,10 @@ public class EventController {
 
         // TODO EventResource로 link를 만들 수 있음.
         EventResource eventResource = new EventResource(event);
+        // 만약 EventResource에 생성했으면 안해도 됨.
         //eventResource.add(new Link()); // 이렇게도 가능 하지만 linkTo()를 사용
         eventResource.add(linkTo(EventController.class).withRel("query-events"));
-        eventResource.add(webMvcLinkBuilder.withSelfRel()); // self link
+        //eventResource.add(webMvcLinkBuilder.withSelfRel()); // self link EventResource에 생성
         eventResource.add(webMvcLinkBuilder.withRel("update-event")); // update link
 
         return ResponseEntity.created(createUri).body(eventResource);
