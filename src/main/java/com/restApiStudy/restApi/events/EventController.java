@@ -1,6 +1,8 @@
 package com.restApiStudy.restApi.events;
 
+import com.restApiStudy.restApi.commons.ErrorsResource;
 import org.modelmapper.ModelMapper;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -56,13 +58,15 @@ public class EventController {
             // json화 하여 보여줄것임. 하지만 errors는 json화 하지 못하여
             // ErrorsSerializer 클래스를 생성하여 보내줄 것임.
             //return ResponseEntity.badRequest().build();
-            return ResponseEntity.badRequest().body(errors);
+            //return ResponseEntity.badRequest().body(errors);
+            return badRequest(errors); // 리팩토링함
         }
         // TODO 이젠 데이터를 검증
         eventValidation.validate(eventDto, errors);
         if (errors.hasErrors()) {
             //return ResponseEntity.badRequest().build();
-            return ResponseEntity.badRequest().body(errors);
+            //return ResponseEntity.badRequest().body(errors);
+            return badRequest(errors);
         }
 
         Event event = modelMapper.map(eventDto, Event.class);
@@ -84,5 +88,9 @@ public class EventController {
         eventResource.add(Link.of("/docs/index.html#resources-events-create").withRel("profile")); // profile link
 
         return ResponseEntity.created(createUri).body(eventResource);
+    }
+
+    private static ResponseEntity badRequest(Errors errors) {
+        return ResponseEntity.badRequest().body(ErrorsResource.modelOf(errors));
     }
 }

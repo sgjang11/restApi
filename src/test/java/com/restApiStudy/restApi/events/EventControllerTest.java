@@ -289,10 +289,11 @@ public class EventControllerTest {
                 // 하지만 GlobalError일 경우 field와 rejectedValue가 없기 때문에 에러발생할 수 있음.
                 .andDo(print())
                 //.andExpect(jsonPath("$[0].field").exists())
-                .andExpect(jsonPath("$[0].objectName").exists())
-                .andExpect(jsonPath("$[0].defaultMessage").exists())
-                .andExpect(jsonPath("$[0].code").exists())
+                .andExpect(jsonPath("errors[0].objectName").exists())
+                .andExpect(jsonPath("errors[0].defaultMessage").exists())
+                .andExpect(jsonPath("errors[0].code").exists())
                 //.andExpect(jsonPath("$[0].rejectedValue").exists())
+                .andExpect(jsonPath("_links.index").exists())
         ;
     }
 
