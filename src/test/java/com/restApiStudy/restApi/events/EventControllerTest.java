@@ -18,6 +18,7 @@ import org.springframework.restdocs.headers.HeaderDocumentation;
 import org.springframework.restdocs.hypermedia.HypermediaDocumentation;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.payload.PayloadDocumentation;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -39,6 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs // RestDocs 사용하기 위해 추가
 @Import(RestDocsConfiguration.class) // 사용할 설정 파일을 import해줌
+@ActiveProfiles("test")
 public class EventControllerTest {
     @Autowired
     MockMvc mockMvc;
@@ -171,7 +173,8 @@ public class EventControllerTest {
                         , links(
                                 linkWithRel("self").description("link to self"),
                                 linkWithRel("query-events").description("link to query"),
-                                linkWithRel("update-event").description("link to update")
+                                linkWithRel("update-event").description("link to update"),
+                                linkWithRel("profile").description("link to profile")
                         )
                         , requestHeaders(
                                 headerWithName(HttpHeaders.ACCEPT).description("accept header")
@@ -211,6 +214,7 @@ public class EventControllerTest {
                                 , fieldWithPath("_links.self.href").description("link to self")
                                 , fieldWithPath("_links.query-events.href").description("link to query-events")
                                 , fieldWithPath("_links.update-event.href").description("link to update-event")
+                                , fieldWithPath("_links.profile.href").description("link to profile")
                         )
                 ))
         ;

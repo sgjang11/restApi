@@ -1,6 +1,7 @@
 package com.restApiStudy.restApi.events;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
@@ -80,6 +81,7 @@ public class EventController {
         eventResource.add(linkTo(EventController.class).withRel("query-events"));
         //eventResource.add(webMvcLinkBuilder.withSelfRel()); // self link EventResource에 생성
         eventResource.add(webMvcLinkBuilder.withRel("update-event")); // update link
+        eventResource.add(Link.of("/docs/index.html#resources-events-create").withRel("profile")); // profile link
 
         return ResponseEntity.created(createUri).body(eventResource);
     }
