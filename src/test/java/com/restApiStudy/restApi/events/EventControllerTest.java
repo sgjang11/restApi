@@ -1,21 +1,26 @@
 package com.restApiStudy.restApi.events;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.restApiStudy.restApi.common.RestDocsConfiguration;
 import com.restApiStudy.restApi.commons.TestDescription;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -25,6 +30,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 //2.
 @SpringBootTest
 @AutoConfigureMockMvc
+@AutoConfigureRestDocs // RestDocs 사용하기 위해 추가
+@Import(RestDocsConfiguration.class) // 사용할 설정 파일을 import해줌
 public class EventControllerTest {
     @Autowired
     MockMvc mockMvc;
@@ -152,6 +159,7 @@ public class EventControllerTest {
                 .andExpect(jsonPath("_links.self").exists())
                 .andExpect(jsonPath("_links.query-events").exists())
                 .andExpect(jsonPath("_links.update-event").exists())
+                .andDo(document("create-event")) // 처음엔 이름을 줌
         ;
     }
 
