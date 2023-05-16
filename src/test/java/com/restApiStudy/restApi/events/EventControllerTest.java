@@ -1,6 +1,7 @@
 package com.restApiStudy.restApi.events;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.restApiStudy.restApi.common.BaseControllerTest;
 import com.restApiStudy.restApi.common.RestDocsConfiguration;
 import com.restApiStudy.restApi.commons.TestDescription;
 import org.hamcrest.Matchers;
@@ -36,26 +37,26 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@RunWith(SpringRunner.class)
+//@RunWith(SpringRunner.class)
 //1. @WebMvcTest // 요 아이는 슬라이스 테스트라 웹용 bean만 등록해줌 repository는 등록 안함.
 //2.
-@SpringBootTest
-@AutoConfigureMockMvc
-@AutoConfigureRestDocs // RestDocs 사용하기 위해 추가
-@Import(RestDocsConfiguration.class) // 사용할 설정 파일을 import해줌
-@ActiveProfiles("test")
-public class EventControllerTest {
-    @Autowired
-    MockMvc mockMvc;
+//@SpringBootTest
+//@AutoConfigureMockMvc
+//@AutoConfigureRestDocs // RestDocs 사용하기 위해 추가
+//@Import(RestDocsConfiguration.class) // 사용할 설정 파일을 import해줌
+//@ActiveProfiles("test")
+public class EventControllerTest extends BaseControllerTest {
+//    @Autowired
+//    MockMvc mockMvc;
 
-    @Autowired
-    ObjectMapper objectMapper;
+//    @Autowired
+//    ModelMapper modelMapper;
+
+//    @Autowired
+//    ObjectMapper objectMapper;
 
     @Autowired
     EventRepository eventRepository;
-
-    @Autowired
-    ModelMapper modelMapper;
 
   /*1.  @MockBean
     EventRepository eventRepository;*/
