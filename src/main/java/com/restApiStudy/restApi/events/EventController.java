@@ -118,6 +118,39 @@ public class EventController {
         return ResponseEntity.ok(eventResource);
     }
 
+    @PutMapping("{id}")
+    public ResponseEntity updateEvent(
+            @PathVariable Integer id
+            , @RequestBody @Valid EventDto eventDto
+            , Errors errors
+    ) {
+        Optional<Event> optionalEvent = this.eventRepository.findById(id);
+        if(optionalEvent.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+        // 이것은 EventDto의 @들에게 에러가 발생한 것을 확인 시켜줌
+        if (errors.hasErrors()) {
+            return badRequest(errors);
+        }
+
+        // 비즈니스 로직을 위한 validate 사용
+        this.eventValidation.validate(eventDto, errors);
+        // 여기서 에러가 있다면 로직상 에러가 있다는 것을 확인 시켜줌
+        if (errors.hasErrors()) {
+            return badRequest(errors);
+        }
+        // 여기서 에러가 없다면 이제 수정을 한다.
+        Event existingEvent = optionalEvent.get();
+        // ~ 에서 ~ 로 , eventDto에다가 existingEvent이걸 덮어씀
+        this.modelMapper.map(eventDto, existingEvent);
+        // 저장해줌
+        Event savedEvent = this.eventRepository.save(existingEvent);
+        // 그리고 resource로 변환하고 profile 생성 후 ok에 담아서 보내줌
+        EventResource eventResource = new EventResource(savedEvent);
+        eventResource.add(Link.of("/docs/index.html#resources-events-update").withRel("profile")); // profile link)
+        return ResponseEntity.ok(eventResource);
+    }
+
     private static ResponseEntity badRequest(Errors errors) {
         return ResponseEntity.badRequest().body(ErrorsResource.modelOf(errors));
     }
