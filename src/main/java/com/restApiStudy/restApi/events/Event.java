@@ -1,5 +1,6 @@
 package com.restApiStudy.restApi.events;
 
+import com.restApiStudy.restApi.account.Account;
 import lombok.*;
 
 import javax.persistence.*;
@@ -25,6 +26,10 @@ public class Event {
     private boolean free;
     @Enumerated(EnumType.STRING) // ORDINAL이 디폴트값 이건 순서대로 번호 부여 String으로 주는 것이 좋음 이유는 데이터가 꼬일 수 있음
     private EventStatus eventStatus = EventStatus.DRAFT;
+
+    // 단방향으로 설정
+    @ManyToOne
+    private Account manager;
 
     public void update() {
         // update free 무료인지 유료인지 확인

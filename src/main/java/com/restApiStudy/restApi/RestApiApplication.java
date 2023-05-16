@@ -1,9 +1,7 @@
 package com.restApiStudy.restApi;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 public class RestApiApplication {
@@ -12,9 +10,9 @@ public class RestApiApplication {
 		SpringApplication.run(RestApiApplication.class, args);
 	}
 
-	//ModelMapper사용할 경우 bean으로 추가해줘야함
-	@Bean
-	public ModelMapper modelMapper() {
-		return new ModelMapper();
-	}
+	//ModelMapper사용할 경우 bean으로 추가해줘야함 (AppConfig로 이동)
+//	@Bean
+//	public ModelMapper modelMapper() {
+//		return new ModelMapper();
+//	}
 }
