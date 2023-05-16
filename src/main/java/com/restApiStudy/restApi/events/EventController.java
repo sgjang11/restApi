@@ -2,19 +2,22 @@ package com.restApiStudy.restApi.events;
 
 import com.restApiStudy.restApi.commons.ErrorsResource;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.Optional;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
@@ -88,6 +91,31 @@ public class EventController {
         eventResource.add(Link.of("/docs/index.html#resources-events-create").withRel("profile")); // profile link
 
         return ResponseEntity.created(createUri).body(eventResource);
+    }
+
+    @GetMapping
+    public ResponseEntity queryEvents(Pageable pageable, PagedResourcesAssembler<Event> assembler) {
+        Page<Event> page = this.eventRepository.findAll(pageable);
+        PagedModel<EntityModel<Event>> pagedModel = assembler.toModel(page, e -> new EventResource(e));
+        // 이걸 var로 퉁칠수 있음 var pagedModel = assembler.toModel(page);
+        // 그러면 java에서 컴파일 할 때 타입을 추론한다.
+        // 주의 사항) java에서의 var는 타입변경이 안됨.
+        pagedModel.add(Link.of("/docs/index.html#resources-events-list").withRel("profile")); // profile link
+        return ResponseEntity.ok(pagedModel); // 하면 page의 기본 링크정보를 넘겨줌
+    }
+
+    @GetMapping("{id}")
+    public ResponseEntity getEvent(@PathVariable Integer id) {
+        Optional<Event> optionalEvent = this.eventRepository.findById(id);
+        if (optionalEvent.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Event event = optionalEvent.get();
+        // 보낼 때 resource로 만들어서 보낸다.
+        EventResource eventResource = new EventResource(event);
+        eventResource.add(Link.of("/docs/index.html#resources-events-get").withRel("profile")); // profile link
+        return ResponseEntity.ok(eventResource);
     }
 
     private static ResponseEntity badRequest(Errors errors) {

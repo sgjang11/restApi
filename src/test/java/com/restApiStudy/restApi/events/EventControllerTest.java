@@ -21,14 +21,17 @@ import org.springframework.restdocs.payload.PayloadDocumentation;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.LocalDateTime;
+import java.util.stream.IntStream;
 
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -47,6 +50,9 @@ public class EventControllerTest {
 
     @Autowired
     ObjectMapper objectMapper;
+
+    @Autowired
+    EventRepository eventRepository;
 
   /*1.  @MockBean
     EventRepository eventRepository;*/
@@ -295,6 +301,85 @@ public class EventControllerTest {
                 //.andExpect(jsonPath("$[0].rejectedValue").exists())
                 .andExpect(jsonPath("_links.index").exists())
         ;
+    }
+
+    @Test
+    @TestDescription("30개의 이벤트를 10개씩 두번째 페이지 조회")
+    public void getEvents() throws Exception {
+        //Given
+        IntStream.range(0, 30).forEach(i -> {
+            this.generateEvent(i);
+        });
+        // IntStream.range(0, 30).forEach(this::generateEvent); 위와 동일한 코드
+        
+        //When & Then
+        this.mockMvc.perform(get("/api/events")
+                        .param("page", "1")
+                        .param("size", "10")
+                        .param("sort", "name,DESC")
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("page").exists())
+                .andExpect(jsonPath("_embedded.eventList[0]._links.self").exists())
+                .andExpect(jsonPath("_links.self").exists())
+                .andExpect(jsonPath("_links.profile").exists())
+                .andDo(document("query-events"))
+        ;
+
+        // 위의 when과 then을 쪼개려면
+/*        ResultActions perform = this.mockMvc.perform(get("/api/events")
+                .param("page", "1")
+                .param("size", "10")
+                .param("sort", "name,DESC")
+        );
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("page").exists())
+                .andExpect(jsonPath("_embedded.eventList[0]._links.self").exists())
+                .andExpect(jsonPath("_links.self").exists())
+                .andExpect(jsonPath("_links.profile").exists())
+                .andDo(document("query-events"))
+        ;*/
+    }
+
+    @Test
+    @TestDescription("기존의 이벤트를 하나 조회")
+    public void getEvent() throws Exception {
+        // Given
+        Event event = this.generateEvent(100);
+
+        //When & Then
+        this.mockMvc.perform(get("/api/events/{id}", event.getId()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("name").exists())
+                .andExpect(jsonPath("id").exists())
+                .andExpect(jsonPath("_links.self").exists())
+                .andExpect(jsonPath("_links.profile").exists())
+                .andDo(document("get-an-event"))
+        ;
+    }
+
+    @Test
+    @TestDescription("없는 이벤트를 조회는 404로 응답")
+    public void getEvent404() throws Exception {
+        // Given 없고
+
+        //When & Then
+        this.mockMvc.perform(get("/api/events/123"))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+        ;
+    }
+
+    // event 저장
+    private Event generateEvent(int index) {
+        Event event = Event.builder()
+                .name("event " + index)
+                .description("test event")
+                .build();
+        return this.eventRepository.save(event);
     }
 
 }
