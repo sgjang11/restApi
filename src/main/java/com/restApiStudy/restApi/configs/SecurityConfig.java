@@ -64,7 +64,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //        ;
 //    }
 
-
+/*
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         // 이것은 익명사용자 허용, formLogin 사용
@@ -81,4 +81,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .mvcMatchers(HttpMethod.GET, "/api/**").authenticated()
                 .anyRequest().authenticated();
     }
+*/
+
 }
