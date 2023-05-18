@@ -1,6 +1,8 @@
 package com.restApiStudy.restApi.events;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.restApiStudy.restApi.account.Account;
+import com.restApiStudy.restApi.account.AccountSerializer;
 import lombok.*;
 
 import javax.persistence.*;
@@ -29,6 +31,7 @@ public class Event {
 
     // 단방향으로 설정
     @ManyToOne
+    @JsonSerialize(using = AccountSerializer.class)
     private Account manager;
 
     public void update() {
