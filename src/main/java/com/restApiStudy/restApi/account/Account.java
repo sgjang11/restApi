@@ -13,6 +13,7 @@ public class Account {
     @Id @GeneratedValue
     private Integer id;
 
+    @Column(unique = true) // email은 unique가 되어야함
     private String email;
 
     private String password;

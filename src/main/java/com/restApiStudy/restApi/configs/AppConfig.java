@@ -3,6 +3,7 @@ package com.restApiStudy.restApi.configs;
 import com.restApiStudy.restApi.account.Account;
 import com.restApiStudy.restApi.account.AccountService;
 import com.restApiStudy.restApi.account.AcountRole;
+import com.restApiStudy.restApi.commons.AppProperties;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -27,7 +28,7 @@ public class AppConfig {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
-    // 부트가 구동될 때 하나 생성해줌
+    // 부트가 구동될 때 하나 생성해줌 (여기서 ddl-auto 설정이 create-drop이라 생성하고 구동 중지되면 사라짐)
     @Bean
     public ApplicationRunner applicationRunner() {
         return new ApplicationRunner() {
@@ -35,14 +36,24 @@ public class AppConfig {
             @Autowired
             AccountService accountService;
 
+            @Autowired
+            AppProperties appProperties;
+
             @Override
             public void run(ApplicationArguments args) throws Exception {
-                Account test = Account.builder()
-                        .email("sgjang@email.com")
-                        .password("test")
+                Account admin = Account.builder()
+                        .email(appProperties.getAdminUsername())
+                        .password(appProperties.getAdminPassword())
                         .roles(Set.of(AcountRole.ADMIN, AcountRole.USER))
                         .build();
-                accountService.saveAccount(test);
+                accountService.saveAccount(admin);
+
+                Account user = Account.builder()
+                        .email(appProperties.getUserUsername())
+                        .password(appProperties.getUserPassword())
+                        .roles(Set.of(AcountRole.USER))
+                        .build();
+                accountService.saveAccount(user);
             }
         };
     }

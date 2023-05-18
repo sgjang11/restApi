@@ -4,6 +4,7 @@ import com.restApiStudy.restApi.account.Account;
 import com.restApiStudy.restApi.account.AccountService;
 import com.restApiStudy.restApi.account.AcountRole;
 import com.restApiStudy.restApi.common.BaseControllerTest;
+import com.restApiStudy.restApi.commons.AppProperties;
 import com.restApiStudy.restApi.commons.TestDescription;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,29 +28,33 @@ public class AuthServerConfigTest extends BaseControllerTest {
     @Autowired
     AccountService accountService;
 
+    @Autowired
+    AppProperties appProperties;
+
     @Test
     @TestDescription("인증 토큰 발급 받는 테스트")
     public void getAuthToken() throws Exception {
         // Given
-        String username = "test@email.com";
-        String password = "test";
-        Account test = Account.builder()
-                .email(username)
-                .password(password)
-                .roles(Set.of(AcountRole.ADMIN, AcountRole.USER))
-                .build();
-        this.accountService.saveAccount(test);
-        
-        String clientId = "myApp";
-        String clientSecret = "pass";
+//        String username = "test@email.com";
+//        String password = "test";
+        // 부트가 실행될 때 새로 생성되기 때문에 필요없음
+//        Account test = Account.builder()
+//                .email(appProperties.getUserUsername())
+//                .password(appProperties.getUserPassword())
+//                .roles(Set.of(AcountRole.ADMIN, AcountRole.USER))
+//                .build();
+//        this.accountService.saveAccount(test);
+
+//        String clientId = "myApp";
+//        String clientSecret = "pass";
 
         // When & Then
         // post("/oauth/token") 하면 처리할 수 있는 것이 적용됨.
         this.mockMvc.perform(post("/oauth/token")
-                        .with(httpBasic(clientId, clientSecret))
+                        .with(httpBasic(appProperties.getClientId(), appProperties.getClientPassword()))
                         .param("grant_type", "password")
-                        .param("username", username)
-                        .param("password", password)
+                        .param("username", appProperties.getUserUsername())
+                        .param("password", appProperties.getUserPassword())
                 )
                 .andDo(print())
                 .andExpect(status().isOk())

@@ -7,6 +7,7 @@ import com.restApiStudy.restApi.account.AccountService;
 import com.restApiStudy.restApi.account.AcountRole;
 import com.restApiStudy.restApi.common.BaseControllerTest;
 import com.restApiStudy.restApi.common.RestDocsConfiguration;
+import com.restApiStudy.restApi.commons.AppProperties;
 import com.restApiStudy.restApi.commons.TestDescription;
 import org.hamcrest.Matchers;
 import org.junit.Before;
@@ -72,6 +73,9 @@ public class EventControllerTest extends BaseControllerTest {
 
     @Autowired
     AccountRepository accountRepository;
+
+    @Autowired
+    AppProperties appProperties;
 
     @Before
     public void setUp() {
@@ -259,16 +263,17 @@ public class EventControllerTest extends BaseControllerTest {
 
     private String getAccessToken() throws Exception {
         // Given
-        String username = "test@email.com";
-        String password = "test";
+        String username = appProperties.getAdminUsername();
+        String password = appProperties.getAdminPassword();
+        String clientId = appProperties.getClientId();
+        String clientSecret = appProperties.getClientPassword();
+
         Account test = Account.builder()
                 .email(username)
                 .password(password)
                 .roles(Set.of(AcountRole.ADMIN, AcountRole.USER))
                 .build();
         this.accountService.saveAccount(test);
-        String clientId = "myApp";
-        String clientSecret = "pass";
 
         // When
         ResultActions perform = this.mockMvc.perform(post("/oauth/token")
