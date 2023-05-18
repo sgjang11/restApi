@@ -27,6 +27,8 @@ import org.springframework.restdocs.headers.HeaderDocumentation;
 import org.springframework.restdocs.hypermedia.HypermediaDocumentation;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.payload.PayloadDocumentation;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.common.util.Jackson2JsonParser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -406,6 +408,34 @@ public class EventControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("_links.profile").exists())
                 .andDo(document("query-events"))
         ;*/
+    }
+
+    @Test
+    @TestDescription("30개의 이벤트를 10개씩 두번째 페이지 조회 인증정보 줌")
+    public void getEventsWithAuthentication() throws Exception {
+        //Given
+        IntStream.range(0, 30).forEach(i -> {
+            this.generateEvent(i);
+        });
+        // IntStream.range(0, 30).forEach(this::generateEvent); 위와 동일한 코드
+
+        //When & Then
+        this.mockMvc.perform(get("/api/events")
+                        .header(HttpHeaders.AUTHORIZATION, getBearerToken())
+                        .param("page", "1")
+                        .param("size", "10")
+                        .param("sort", "name,DESC")
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("page").exists())
+                .andExpect(jsonPath("_embedded.eventList[0]._links.self").exists())
+                .andExpect(jsonPath("_links.self").exists())
+                .andExpect(jsonPath("_links.profile").exists())
+                .andExpect(jsonPath("_links.create-event").exists())
+                .andDo(document("query-events"))
+        ;
+
     }
 
     @Test
